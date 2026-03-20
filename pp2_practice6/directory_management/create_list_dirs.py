@@ -1,45 +1,97 @@
-from __future__ import annotations
-
 import os
-from pathlib import Path
 
 
 def main() -> None:
     """
-    Пример:
-    1) Создаёт вложенные директории.
-    2) Выводит список файлов и папок.
-    3) Находит файлы по расширению (*.txt).
+    Демонстрация директории:
+    - os.mkdir() / os.makedirs()
+    - os.getcwd() / os.chdir()
+    - os.listdir()
+    - найти файлы по расширению через os.walk
+    - os.rmdir() (cleanup пустых папок)
     """
 
-    base_dir = Path(__file__).resolve().parent
-    root = base_dir / "data" / "nested_dirs"
+    base_dir = os.path.dirname(__file__)
+    nested_root = os.path.join(base_dir, "nested_dirs")
 
-    # Создаём вложенную структуру
-    paths_to_create = [
-        root / "level1" / "level2a",
-        root / "level1" / "level2b",
-    ]
-    for p in paths_to_create:
-        p.mkdir(parents=True, exist_ok=True)
+    # Чтобы повторы не ломались.
+    # Удалять всё на старте будем осторожно: только если папка существует.
+    if os.path.exists(nested_root):
+        # Удаляем файлы, затем пробуем удалить папки снизу вверх.
+        for root, _, files in os.walk(nested_root, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            for d in os.listdir(root):
+                full = os.path.join(root, d)
+                if os.path.isdir(full):
+                    try:
+                        os.rmdir(full)
+                    except OSError:
+                        pass
+        try:
+            os.rmdir(nested_root)
+        except OSError:
+            pass
 
-    # Положим по одному файлу в ветки, чтобы было что искать.
-    (root / "level1" / "level2a" / "a.txt").write_text("A file with .txt extension\n", encoding="utf-8")
-    (root / "level1" / "level2a" / "b.py").write_text("# python file\n", encoding="utf-8")
-    (root / "level1" / "level2b" / "c.txt").write_text("C file with .txt extension\n", encoding="utf-8")
+    # Папки: сначала через os.mkdir, потом через os.makedirs (оба варианта показаны).
+    if not os.path.exists(nested_root):
+        os.mkdir(nested_root)
+    level1 = os.path.join(nested_root, "level1")
+    os.mkdir(level1)
+    os.makedirs(os.path.join(level1, "level2a"), exist_ok=True)
+    os.makedirs(os.path.join(level1, "level2b"), exist_ok=True)
 
-    print(f"Created folders under: {root}")
+    # Файлы для поиска.
+    a_txt = os.path.join(level1, "level2a", "a.txt")
+    b_py = os.path.join(level1, "level2a", "b.py")
+    c_txt = os.path.join(level1, "level2b", "c.txt")
+    with open(a_txt, "w", encoding="utf-8") as f:
+        f.write("A file with .txt extension\n")
+    with open(b_py, "w", encoding="utf-8") as f:
+        f.write("# python file\n")
+    with open(c_txt, "w", encoding="utf-8") as f:
+        f.write("C file with .txt extension\n")
 
-    # Список файлов/папок на первом уровне.
-    print("--- listdir (first level) ---")
-    for name in os.listdir(root):
+    print(f"Created folders under: {nested_root}")
+    print("--- os.getcwd()/os.chdir() ---")
+    print(f"Before chdir: {os.getcwd()}")
+    os.chdir(nested_root)
+    print(f"After chdir: {os.getcwd()}")
+
+    print("--- os.listdir() (first level) ---")
+    for name in os.listdir("."):
         print(name)
 
-    # Поиск файлов по расширению.
-    print("--- .txt files found ---")
-    txt_files = [p for p in root.rglob("*.txt") if p.is_file()]
-    for p in txt_files:
-        print(p.relative_to(base_dir))
+    # Ищем файлы по расширению.
+    print("--- .txt files found (os.walk) ---")
+    found = []
+    for root, _, files in os.walk("."):
+        for name in files:
+            if name.endswith(".txt"):
+                found.append(os.path.join(root, name))
+
+    for p in sorted(found):
+        print(p)
+
+    # Cleanup: удалим созданные файлы и папки, чтобы не мусорить в репозитории.
+    for root, _, files in os.walk(nested_root, topdown=False):
+        for name in files:
+            os.remove(os.path.join(root, name))
+        for d in os.listdir(root):
+            full = os.path.join(root, d)
+            if os.path.isdir(full):
+                try:
+                    os.rmdir(full)
+                except OSError:
+                    pass
+    try:
+        os.chdir(base_dir)
+    except OSError:
+        pass
+    try:
+        os.rmdir(nested_root)
+    except OSError:
+        pass
 
 
 if __name__ == "__main__":

@@ -1,14 +1,13 @@
-from __future__ import annotations
-
 from functools import reduce
 
 
 def main() -> None:
     """
-    Пример:
-    - map(): превращаем строки в int
-    - filter(): оставляем только чётные
-    - reduce(): суммируем результат
+    Демонстрация built-in функций:
+    - map() + типовая конверсия `int(...)`
+    - filter() для отбора
+    - reduce() (functools) для агрегации
+    - len()/sum()/min()/max()/sorted()
     """
 
     raw = ["1", "2", "3", "4", "5", "6"]
@@ -22,6 +21,13 @@ def main() -> None:
     print(f"ints: {ints}")
     print(f"evens: {evens}")
     print(f"reduce(sum) total: {total}")
+
+    # Остальные built-in из списка задания
+    print(f"len(evens): {len(evens)}")
+    print(f"sum(evens): {sum(evens)}")
+    print(f"min(evens): {min(evens)}")
+    print(f"max(evens): {max(evens)}")
+    print(f"sorted(evens): {sorted(evens)}")
 
 
 if __name__ == "__main__":

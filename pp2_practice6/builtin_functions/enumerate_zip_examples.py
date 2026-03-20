@@ -1,13 +1,8 @@
-from __future__ import annotations
-
-from typing import Any
-
-
-def to_int(value: Any) -> int | None:
+def to_int(value):
     """
-    Пример "type checking and conversions":
+    type checking and conversions:
     - если значение уже int -> возвращаем
-    - если str, пытаемся преобразовать в int
+    - если str -> пытаемся преобразовать в int
     - иначе -> None
     """
 
@@ -25,8 +20,7 @@ def to_int(value: Any) -> int | None:
 
 def main() -> None:
     """
-    Пример:
-    - enumerate(): нумеруем список
+    - enumerate(): парная итерация с индексом
     - zip(): идём по двум спискам параллельно
     - type checking & conversion: to_int(...)
     """

@@ -1,43 +1,42 @@
-from __future__ import annotations
-
+import os
 import time
 import shutil
-from pathlib import Path
 
 
 def main() -> None:
     """
-    Пример:
-    1) Копирует файл в backup (shutil).
-    2) Проверяет, что backup появился.
-    3) Удаляет исходный файл безопасно.
+    Демонстрация:
+    - копирование и back-up через `shutil.copy2` (backup НЕ в папке, а отдельным именем файла)
+    - безопасное удаление исходника после успешного копирования
     """
 
-    base_dir = Path(__file__).resolve().parent
-    data_dir = base_dir / "data"
-    src = data_dir / "sample.txt"
-    backup_dir = data_dir / "backup"
-    backup_dir.mkdir(parents=True, exist_ok=True)
+    base_dir = os.path.dirname(__file__)
+    src_path = os.path.join(base_dir, "sample.txt")
+    keep_backup = False  # чтобы не оставлять мусор в репозитории после демонстрации
 
-    if not src.exists():
-        print(f"Source file not found: {src}")
-        print("Run write_files.py first.")
+    if not os.path.exists(src_path):
+        print(f"Source file not found: {src_path}")
+        print("Run `python pp2_practice6/file_handling/write_files.py` first.")
         return
 
-    backup_path = backup_dir / f"sample_backup_{int(time.time())}.txt"
+    backup_name = f"sample_backup_{int(time.time())}.txt"
+    backup_path = os.path.join(base_dir, backup_name)
 
-    shutil.copy2(src, backup_path)
+    shutil.copy2(src_path, backup_path)
 
-    if not backup_path.exists():
+    if not os.path.exists(backup_path):
         print("Backup copy failed (backup file not found).")
         return
 
-    # Delete safely: only delete if backup exists and copy succeeded.
-    src.unlink()
+    # Delete safely: только после того, как backup точно появился.
+    os.remove(src_path)
 
-    print(f"Copied to backup: {backup_path}")
-    print(f"Deleted original: {src}")
-    print("Done.")
+    print(f"Backup created: {backup_path}")
+    print(f"Deleted original: {src_path}")
+
+    if not keep_backup:
+        os.remove(backup_path)
+        print(f"Removed backup (cleanup): {backup_path}")
 
 
 if __name__ == "__main__":

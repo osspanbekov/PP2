@@ -16,5 +16,8 @@ python pp2_practice6/builtin_functions/map_filter_reduce.py
 python pp2_practice6/builtin_functions/enumerate_zip_examples.py
 ```
 
-Все примеры используют папку `pp2_practice6/*/data/` рядом со скриптами (создаются автоматически при необходимости).
+Примеры создают файлы/папки прямо внутри соответствующих директорий:
+- в `file_handling/` создаётся `sample.txt` и backup-файл формата `sample_backup_<timestamp>.txt`;
+- в `copy_delete_files.py` после копирования и демонстрации удаления делается cleanup, поэтому в конце лишние `.txt` не остаются;
+- в `directory_management/` создаются демонстрационные вложенные папки, а затем удаляются (cleanup), чтобы не оставлять мусор.
 
